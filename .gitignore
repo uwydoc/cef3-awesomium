@@ -19,3 +19,8 @@
 *.exe
 *.out
 *.app
+
+# Vim temp/backup/session
+*~
+*.swp
+Session.vim
