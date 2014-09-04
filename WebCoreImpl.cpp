@@ -64,6 +64,7 @@ WebView* WebCoreImpl::CreateWebView(int width,
 void WebCoreImpl::Update()
 {
     /// @todo
+    CefDoMessageLoopWork();
 }
 
 void WebCoreImpl::Log(const WebString& message,
