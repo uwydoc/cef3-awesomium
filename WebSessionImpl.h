@@ -9,9 +9,17 @@
 
 #include <Awesomium/WebSession.h>
 
+#include <include/cef_base.h>
+#include <include/cef_request_context_handler.h>
+
+class CefCookieManager;
+class CefRequestContext;
+
 namespace Awesomium {
 
-class WebSessionImpl: public WebSession {
+class WebSessionImpl: public WebSession,
+                      public CefBase
+{
 public:
     class RequestContextHandler: public CefRequestContextHandler {
     public:
@@ -23,7 +31,9 @@ public:
         }
     private:
         CefRefPtr<CefCookieManager> cookie_manager_;
-    }
+
+        IMPLEMENT_REFCOUNTING(RequestContextHandler);
+    };
 
 public:
     WebSessionImpl(const WebString& path, const WebPreferences& prefs);
@@ -114,9 +124,12 @@ public:
 private:
     WebString path_;
     WebPreferences prefs_;
+    // CEF-related members
     CefBrowserSettings settings_;
     CefRefPtr<CefCookieManager> cookie_manager_;
     CefRefPtr<CefRequestContext> request_context_;
+
+    IMPLEMENT_REFCOUNTING(WebSessionImpl);
 };
 
 } // namespace Awesomium

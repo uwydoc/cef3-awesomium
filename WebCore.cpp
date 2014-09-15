@@ -3,26 +3,32 @@
  * 
  * @breif Impl. of the WebCore class.
  */
-#include "WebCore.h"
+#include <Awesomium/WebCore.h>
+
 #include "WebCoreImpl.h"
 
-using namespace Awesomium;
+namespace Awesomium {
 
-WebCore* WebCore::Initialize(const WebConfig& config)
+WebCore* OSM_EXPORT WebCore::instance_ = 0;
+
+WebCore* OSM_EXPORT WebCore::Initialize(const WebConfig& config)
 {
     if (!instance_)
         instance_ = new WebCoreImpl(config);
     return instance_;
 }
 
-void WebCore::Shutdown()
+void OSM_EXPORT WebCore::Shutdown()
 {
-    if (!instance) return;
-    delete instance_;
-    instance_ = NULL;
+    if (instance_) {
+        delete instance_;
+        instance_ = NULL;
+    }
 }
 
-WebCore* WebCore::instance()
+WebCore* OSM_EXPORT WebCore::instance()
 {
     return instance_;
+}
+
 }

@@ -5,42 +5,16 @@
  */
 #include <Awesomium/WebURL.h>
 
-#include <include/cef_url.h>
-#include <include/internal/cef_string.h>
+#include "WebURLImpl.h"
 
 namespace Awesomium {
 
 namespace {  // internal
-    
-    // WebURL Impl. class
-    struct WebURLImpl {
-        WebURLImpl()
-            : is_valid(false), is_empty(true)
-        {}
-        WebURLImpl(const WebString& url)
-            : url(url), is_valid(true), is_empty(url.IsEmpty())
-        {
-            CefString url1(url.data(), url.length(), false);
-            is_valid = CefParseURL(url1, parts);
-        }
-        // Reformat url parts to form a canonical url string
-        CefString canonical_url() const
-        {
-            CefString can_url;
-            CefCreateURL(parts, can_url);
-            return can_url;
-        }
-        // member variables
-        WebString url;
-        bool is_valid;
-        bool is_empty;
-        CefURLParts parts;
-        friend class WebURL;
-    };
 
     inline WebURLImpl* to_impl(void* instance) {
         return static_cast<WebURLImpl*>(instance);
     }
+
 }
 
 OSM_EXPORT WebURL::WebURL()

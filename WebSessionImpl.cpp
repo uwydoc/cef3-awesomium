@@ -3,8 +3,15 @@
  * 
  * @breif Impl of class WebSessionImpl
  */
-#include "Awesomium/WebSessionImpl.h"
-#include "Awesomium/CefTypeHelper.h"
+#include "WebSessionImpl.h"
+
+#include <include/cef_cookie.h>
+#include <include/cef_request_context.h>
+#include <include/cef_task.h>
+#include <include/cef_runnable.h>
+
+#include "CefTypeHelpers.h"
+#include "InternalHelper.h"
 
 using namespace Awesomium;
 
@@ -38,23 +45,33 @@ WebSessionImpl::WebSessionImpl(const WebString& path,
     settings_.javascript_access_clipboard = to_cef_state_t(
             prefs.allow_scripts_to_access_clipboard);
     settings_.universal_access_from_file_urls = to_cef_state_t(
-            prefs.allow_universal_access_from_file_urls);
+            prefs.allow_universal_access_from_file_url);
     settings_.file_access_from_file_urls = to_cef_state_t(
-            prefs.allow_file_access_from_file_urls);
+            prefs.allow_file_access_from_file_url);
     /// @note unused variables in WebPreferences
     //  enable_dart, enable_web_audio, enable_smooth_scrolling, proxy_config,
     //  accept_language, accept_charset, default_encoding,
     //  allow_running_insecure_content
     
     /// Create cookie manager for use with this session
-    WebCoreImpl* web_core = static_cast<WebCoreImpl*>(WebCore::instance());
-    CefString cache_path = web_core->settings().cache_path;
+    //WebCoreImpl* web_core = dynamic_cast<WebCoreImpl*>(WebCore::instance());
+    //CefString cache_path = web_core->settings().cache_path;
+    CefString cache_path;
     if (!path.IsEmpty())
         cache_path.FromString(ToString(path));
     cookie_manager_ = CefCookieManager::CreateManager(cache_path, false);
     CefRefPtr<CefRequestContextHandler> handler = new RequestContextHandler(
             cookie_manager_);
     request_context_ = CefRequestContext::CreateContext(handler);
+}
+
+WebSessionImpl::~WebSessionImpl()
+{}
+
+void WebSessionImpl::Release() const
+{
+    cookie_manager_->FlushStore(0);
+    //TODO
 }
 
 void WebSessionImpl::AddDataSource(const WebString& asset_host,
@@ -70,22 +87,23 @@ void WebSessionImpl::SetCookie(const WebURL& url,
 {
     if (!CefCurrentlyOn(TID_IO)) {
         CefPostTask(TID_IO,
-                new CefRunnableMethod(this, &WebSessionImpl::SetCookie,
+                NewCefRunnableMethod(this, &WebSessionImpl::SetCookie,
                     url, cookie_string, is_http_only, force_session_cookie));
         return;
     }
     CefCookie cookie;
     cookie.httponly = is_http_only;
-    cookie.expires = !force_session_cookie;
+    cookie.has_expires = !force_session_cookie;
     update_cef_string_t(&cookie.value, ToString(cookie_string));
-    cookie_manager_->SetCookie(ToString(url), cookie);
+    WebString url_str = InternalHelper::ToWebString(url);
+    cookie_manager_->SetCookie(InternalHelper::ToCefString(url_str), cookie);
 }
 
 void WebSessionImpl::ClearCookies()
 {
     if (!CefCurrentlyOn(TID_IO)) {
         CefPostTask(TID_IO,
-                new CefRunnableMethod(this, &WebSessionImpl::ClearCookies));
+                NewCefRunnableMethod(this, &WebSessionImpl::ClearCookies));
         return;
     }
     cookie_manager_->DeleteCookies("", "");
