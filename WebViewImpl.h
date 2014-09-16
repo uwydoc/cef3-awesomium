@@ -729,11 +729,24 @@ class WebViewImpl: public WebView {
   ///
   virtual void ReduceMemoryUsage();
 
- protected:
-    virtual ~WebView() {}
+  virtual ~WebViewImpl() {}
 
  private:
     WebViewType type_;
+    WebSession* session_;
+    int width_;
+    int height_;
+    WebURL url_;
+    WebViewListener::View* view_listener_;
+    WebViewListener::Load* load_listener_;
+    WebViewListener::Process* process_listener_;
+    WebViewListener::Menu* menu_listener_;
+    WebViewListener::Dialog* dialog_listener_;
+    WebViewListener::Print* print_listener_;
+    WebViewListener::Download* download_listener_;
+    WebViewListener::InputMethodEditor* ime_listener_;
+    JSMethodHandler* js_method_handler_;
+    int sync_message_timeout_;  // ms
 };
 
 }  // namespace Awesomium
