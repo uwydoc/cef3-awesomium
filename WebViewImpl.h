@@ -43,14 +43,14 @@ class WebViewImpl: public WebView {
   /// is an Offscreen WebView, you will need to display the Surface and pass
   /// all input yourself.
   ///
-  virtual WebViewType type();
+  virtual WebViewType type() { return type_; }
 
   ///
   /// Get the unique ID for the corresponding child-process hosting this
   /// WebView. May return 0 if the WebView has crashed or there is no
   /// process active.
   ///
-  virtual int process_id();
+  virtual int process_id() { return process_id_; }
 
   ///
   /// Get the unique routing ID within the child-process. Each process may
@@ -71,7 +71,7 @@ class WebViewImpl: public WebView {
   /// WebView is actually created (when we receive the first IPC message
   /// from the child-process).
   ///
-  virtual ProcessHandle process_handle();
+  virtual ProcessHandle process_handle() { return process_handle_; }
 
   ///
   /// Set the parent window for this WebView. You should only call this
@@ -82,12 +82,13 @@ class WebViewImpl: public WebView {
   /// the window for this WebView will not be created until the first
   /// call to set_parent_window on the Windows platform.
   ///
-  virtual void set_parent_window(NativeWindow parent);
+  virtual void set_parent_window(NativeWindow parent)
+  { parent_window_ = parent; }
 
   ///
   /// Get the parent window for this WebView.
   ///
-  virtual NativeWindow parent_window();
+  virtual NativeWindow parent_window() { return parent_window_; }
 
   ///
   /// Get the actual window handle that was created by this WebView. This is
@@ -96,7 +97,7 @@ class WebViewImpl: public WebView {
   /// On the Mac OSX platform, you will need to retrieve this window (NSView)
   /// and add it to your application's view container to display it.
   ///
-  virtual NativeWindow window();
+  virtual NativeWindow window() { return window_; }
 
   ///
   /// Register a listener to handle view-related events.
@@ -156,28 +157,30 @@ class WebViewImpl: public WebView {
                              WebViewListener::InputMethodEditor* listener);
 
   /// Get the current view-event listener (may be NULL).
-  virtual WebViewListener::View* view_listener();
+  virtual WebViewListener::View* view_listener() { return view_listener_; }
 
   /// Get the current load-event listener (may be NULL).
-  virtual WebViewListener::Load* load_listener();
+  virtual WebViewListener::Load* load_listener() { return load_listener_; }
 
   /// Get the current process-event listener (may be NULL).
-  virtual WebViewListener::Process* process_listener();
+  virtual WebViewListener::Process* process_listener() { return process_listener_; }
 
   /// Get the current menu-event listener (may be NULL).
-  virtual WebViewListener::Menu* menu_listener();
+  virtual WebViewListener::Menu* menu_listener() { return menu_listener_; }
 
   /// Get the current dialog-event listener (may be NULL).
-  virtual WebViewListener::Dialog* dialog_listener();
+  virtual WebViewListener::Dialog* dialog_listener() { return dialog_listener_; }
 
   /// Get the current print-event listener (may be NULL).
-  virtual WebViewListener::Print* print_listener();
+  virtual WebViewListener::Print* print_listener() { return print_listener_; }
 
   /// Get the current download-event listener (may be NULL).
-  virtual WebViewListener::Download* download_listener();
+  virtual WebViewListener::Download* download_listener()
+  { return download_listener_; }
 
   /// Get the current download-event listener (may be NULL).
-  virtual WebViewListener::InputMethodEditor* input_method_editor_listener();
+  virtual WebViewListener::InputMethodEditor* input_method_editor_listener()
+  { return ime_listener_; }
 
   ///
   /// Begin loading a certain URL asynchronously.
@@ -243,13 +246,13 @@ class WebViewImpl: public WebView {
   virtual Surface* surface();
 
   /// Get the current page URL.
-  virtual WebURL url();
+  virtual WebURL url() { return url_; }
 
   /// Get the current page title.
-  virtual WebString title();
+  virtual WebString title() { return title_; }
 
   /// Get the session associated with this WebView.
-  virtual WebSession* session();
+  virtual WebSession* session() { return session_; }
 
   /// Check whether or not any page resources are loading.
   virtual bool IsLoading();
@@ -283,12 +286,13 @@ class WebViewImpl: public WebView {
   /// @param  is_transparent  Whether or not the view should support
   ///                         transparency.
   ///
-  virtual void SetTransparent(bool is_transparent);
+  virtual void SetTransparent(bool is_transparent)
+  { transparent_ = is_transparent; }
 
   ///
   /// Whether or not the view supports transparency.
   ///
-  virtual bool IsTransparent();
+  virtual bool IsTransparent() { return transparent_; }
 
   ///
   /// Pause the renderer. All rendering is done asynchronously in a separate
@@ -614,12 +618,13 @@ class WebViewImpl: public WebView {
   ///
   /// Default is 800 (ms). Set this to 0 to use no timeout.
   ///
-  virtual void set_sync_message_timeout(int timeout_ms);
+  virtual void set_sync_message_timeout(int timeout_ms)
+  { sync_message_timeout_ = timeout_ms; }
 
   ///
   /// Get the maximum timeout for synchronous IPC messages.
   ///
-  virtual int sync_message_timeout();
+  virtual int sync_message_timeout() { return sync_message_timeout_; }
 
   ///
   /// This method should be called as the result of a user selecting an item
@@ -729,14 +734,21 @@ class WebViewImpl: public WebView {
   ///
   virtual void ReduceMemoryUsage();
 
-  virtual ~WebViewImpl() {}
+  WebViewImpl(int width,
+              int height,
+              WebSession* session,
+              WebViewType type=kWebViewType_Offscreen);
+
+  virtual ~WebViewImpl();
 
  private:
-    WebViewType type_;
-    WebSession* session_;
     int width_;
     int height_;
+    WebSession* session_;
+    WebViewType type_;
     WebURL url_;
+    NativeWindow parent_window_;
+    NativeWindow window_;
     WebViewListener::View* view_listener_;
     WebViewListener::Load* load_listener_;
     WebViewListener::Process* process_listener_;
@@ -744,9 +756,17 @@ class WebViewImpl: public WebView {
     WebViewListener::Dialog* dialog_listener_;
     WebViewListener::Print* print_listener_;
     WebViewListener::Download* download_listener_;
-    WebViewListener::InputMethodEditor* ime_listener_;
+    WebViewListener::InputMethodEditor* input_method_editor_listener_;
     JSMethodHandler* js_method_handler_;
     int sync_message_timeout_;  // ms
+    int process_id_;
+    ProcessHandle process_handle_;
+    bool transparent_;
+    bool loading_;
+    bool crashed_;
+    // CFE3-related members
+    ClientHandler* client_handler_;
+    CefRefPtr<CefBrowser> browser_;
 };
 
 }  // namespace Awesomium

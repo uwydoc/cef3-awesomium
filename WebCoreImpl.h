@@ -241,6 +241,7 @@ private:
     }
 
     friend class WebCore;
+    friend class WebViewImpl;
 
     WebConfig config_;
     SurfaceFactory* surface_factory_;

@@ -12,6 +12,8 @@
 #include <include/cef_base.h>
 #include <include/cef_request_context_handler.h>
 
+class WebViewImpl;
+
 class CefCookieManager;
 class CefRequestContext;
 
@@ -122,6 +124,8 @@ public:
     virtual int GetZoomForURL(const WebURL& url);
 
 private:
+    friend class WebViewImpl;
+
     WebString path_;
     WebPreferences prefs_;
     // CEF-related members
