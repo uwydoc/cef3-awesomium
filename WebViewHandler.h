@@ -7,19 +7,7 @@
 #define CEF3_AWESOMIUM_WEB_VIEW_HANDLER_H_
 #pragma once
 
-#include <include/cef_base.h>
-#include <include/cef_load_handler.h>
-#include <include/cef_request_handler.h>
-#include <include/cef_menu_context_handler.h>
-#include <include/cef_dialog_handler.h>
-
-class CefBrowser;
-class CefFrame;
-class CefDOMNode;
-class CefV8Context;
-class CefDownloadItem;
-class CefBeforeDownloadCallback;
-class CefDownloadItemCallback;
+#include <client_handler.h>
 
 namespace Awesomium {
 
@@ -37,9 +25,10 @@ namespace WebViewListener {
 
 namespace WebViewHandler {
 
-class View : public CefBase {
+class View : public ClientHandler::View {
 public:
-    View(WebViewListener::View* listener);
+    View(Awesomium::WebView* view, WebViewListener::View* listener)
+        : web_view_(view), listener_(listener) {}
 
     /// CefDisplayHandler [CefClient]
     /// @note default to be of 'CefClient'
@@ -64,14 +53,16 @@ public:
     // 'OnChangeTooltip', 'OnChangeTargetUrl', 'OnChangeFocus',
     // 'OnShowCreatedWebView'
 private:
+    Awesomium::WebView* web_view_;
     WebViewListener::View* listener_;
 
     IMPLEMENT_REFCOUNTING(View);
 };
 
-class Load : public CefBase {
+class Load : public ClientHandler::Load {
 public:
-    Load(WebViewListener::Load* listener);
+    Load(Awesomium::WebView* view, WebViewListener::View* listener)
+        : web_view_(view), listener_(listener) {}
 
     /// CefLoadHandler [CefApp][CefRenderProcessHandler]
     virtual void OnLoadStart(CefRefPtr<CefBrowser> browser,
@@ -89,14 +80,16 @@ public:
                                   CefRefPtr<CefFrame> frame,
                                   CefRefPtr<CefV8Context> context);
 private:
+    Awesomium::WebView* web_view_;
     WebViewListener::Load* listener_;
 
     IMPLEMENT_REFCOUNTING(Load);
 };
 
-class Process : public CefBase {
+class Process : public ClientHandler::Process {
 public:
-    Process(WebViewListener::Process* listener);
+    Process(Awesomium::WebView* view, WebViewListener::View* listener)
+        : web_view_(view), listener_(listener) {}
 
     /// CefRequestHandler
     virtual void OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
@@ -105,14 +98,16 @@ public:
     // implemented yet:
     // 'OnUnresponsive', 'OnResponsive'
 private:
+    Awesomium::WebView* web_view_;
     WebViewListener::Process* listener_;
 
     IMPLEMENT_REFCOUNTING(Process);
 };
 
-class Menu : public CefBase {
+class Menu : public ClientHandler::Menu {
 public:
-    Menu(WebViewListener::Menu* listener);
+    Menu(Awesomium::WebView* view, WebViewListener::View* listener)
+        : web_view_(view), listener_(listener) {}
 
     /// CefContextMenuHandler
     virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
@@ -128,14 +123,16 @@ public:
     // implemented yet:
     // 'OnShowPopupMenu'
 private:
+    Awesomium::WebView* web_view_;
     WebViewListener::Menu* listener_;
 
     IMPLEMENT_REFCOUNTING(Menu);
 };
 
-class Dialog : public CefBase {
+class Dialog : public ClientHandler::Dialog {
 public:
-    Dialog(WebViewListener::Dialog* listener);
+    Dialog(Awesomium::WebView* view, WebViewListener::View* listener)
+        : web_view_(view), listener_(listener) {}
 
     /// CefDialogHandler
     virtual void OnFileDialog(CefRefPtr<CefBrowser> browser,
@@ -160,27 +157,31 @@ public:
     // implemented yet:
     // 'OnShowPageInfoDialog'
 private:
+    Awesomium::WebView* web_view_;
     WebViewListener::Dialog* listener_;
 
     IMPLEMENT_REFCOUNTING(Dialog);
 };
 
-class Print : public CefBase {
+class Print : public ClientHandler::Print {
 public:
-    Print(WebViewListener::Print* listener);
+    Print(Awesomium::WebView* view, WebViewListener::View* listener)
+        : web_view_(view), listener_(listener) {}
 
     // TODO - the following interfaces WebViewListener::Print are not
     // implemented yet:
     // 'OnRequestPrint', 'OnFailPrint', 'OnFinishPrint'
 private:
+    Awesomium::WebView* web_view_;
     WebViewListener::Print* listener_;
 
     IMPLEMENT_REFCOUNTING(Print);
 };
 
-class Download : public CefBase {
+class Download : public ClientHandler::Download {
 public:
-    Download(WebViewListener::Download* listener);
+    Download(Awesomium::WebView* view, WebViewListener::View* listener)
+        : web_view_(view), listener_(listener) {}
 
     /// CefDownloadHandler
     virtual void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
@@ -192,19 +193,22 @@ public:
                                    CefRefPtr<CefDownloadItemCallback> callback);
     // NOTE - 'OnFinisheDownload' can be implemented in 'OnDownloadUpdated'
 private:
+    Awesomium::WebView* web_view_;
     WebViewListener::Download* listener_;
 
     IMPLEMENT_REFCOUNTING(Download);
 };
 
-class InputMethodEditor : public CefBase {
+class InputMethodEditor : public ClientHandler::InputMethodEditor {
 public:
-    InputMethodEditor(WebViewListener::InputMethodEditor* listener);
+    InputMethodEditor(Awesomium::WebView* view, WebViewListener::View* listener)
+        : web_view_(view), listener_(listener) {}
 
     // TODO - the following interfaces WebViewListener::InputMethodEditor are
     // not implemented yet:
     // 'OnUpdateIME', 'OnCancelIME', 'OnChangeIMERange'
 private:
+    Awesomium::WebView* web_view_;
     WebViewListener::InputMethodEditor* listener_;
 
     IMPLEMENT_REFCOUNTING(InputMethodEditor);

@@ -18,8 +18,11 @@ namespace Awesomium {
 class InternalHelper {
 public:
     static WebString ToWebString(const WebURL& url);
+    static WebString ToWebString(const CefString& str);
     static CefString ToCefString(const WebString& str);
     static CefString ToCefString(const WebURL& url);
+    static Cursor ToOSMCursor(CefCursorHandle cursor);
+    static FocusedElementType ToFocusedElementType(CefDOMNode::Type type);
 };
 
 }
