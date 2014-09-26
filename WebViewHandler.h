@@ -37,13 +37,13 @@ public:
                                  const CefString& url);
     virtual void OnTitleChange(CefRefPtr<CefBrowser> browser,
                                const CefString& title);
-    virtual void OnConsoleMessage(CefRefPtr<CefBrowser> browser,
+    virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                                   const CefString& message,
                                   const CefString& source,
                                   int line);
     /// CefRenderHandler
     virtual void OnCursorChange(CefRefPtr<CefBrowser> browser,
-                                CefCursorHandler cursor);
+                                CefCursorHandle cursor);
     /// CefRenderProcessHandler [CefApp]
     virtual void OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser,
                                       CefRefPtr<CefFrame> frame,

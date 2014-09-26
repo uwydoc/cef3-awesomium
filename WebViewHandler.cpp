@@ -26,13 +26,13 @@ void View::OnTitleChange(CefRefPtr<CefBrowser> browser,
 {
     listener_->OnChangeTitle(web_view_, _TWS(title));
 }
-void View::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
+bool View::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                             const CefString& message,
                             const CefString& source,
                             int line)
 {
-    listener_->OnAddConsoleMessage(web_view_, _TWS(message), line,
-        _TWS(source));
+    return listener_->OnAddConsoleMessage(web_view_, _TWS(message), line,
+            _TWS(source));
 }
 void View::OnCursorChange(CefRefPtr<CefBrowser> browser,
                           CefCursorHandler cursor)
@@ -44,5 +44,5 @@ void View::OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefDOMNode> node)
 {
     listener_->OnChangeFocus(web_view_,
-        InternalHelper::ToFocusedElementType(node->GetType()));
+            InternalHelper::ToFocusedElementType(node->GetType()));
 }
