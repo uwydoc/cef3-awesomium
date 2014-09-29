@@ -64,7 +64,7 @@ public:
     Load(Awesomium::WebView* view, WebViewListener::View* listener)
         : web_view_(view), listener_(listener) {}
 
-    /// CefLoadHandler [CefApp][CefRenderProcessHandler]
+    /// CefLoadHandler
     virtual void OnLoadStart(CefRefPtr<CefBrowser> browser,
                              CefRefPtr<CefFrame> frame);
     virtual void OnLoadError(CefRefPtr<CefBrowser> browser,

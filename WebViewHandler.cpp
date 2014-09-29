@@ -14,6 +14,15 @@ using namespace Awesomium::WebViewHandler;
 
 #define _TWS(cef_str) InternalHelper::ToWebString(cef_str)
 
+namespace {
+
+WebViewImpl* to_impl(WebView* view)
+{
+    return dynamic_cast<WebViewImpl*>(view);
+}
+
+}
+
 /// View
 void View::OnAddressChange(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefFrame> frame,
@@ -43,8 +52,9 @@ void View::OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser,
                                 CefRefPtr<CefFrame> frame,
                                 CefRefPtr<CefDOMNode> node)
 {
-    listener_->OnChangeFocus(web_view_,
-            InternalHelper::ToFocusedElementType(node->GetType()));
+    focused_element_type = InternalHelper::ToFocusedElementType(node->GetType());
+    listener_->OnChangeFocus(web_view_, focused_element_type);
+    to_impl(web_view_)->set_focused_element_type(focused_element_type);
 }
 
 /// Load

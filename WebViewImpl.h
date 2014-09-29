@@ -249,7 +249,7 @@ class WebViewImpl: public WebView {
   virtual WebURL url() { return url_; }
 
   /// Get the current page title.
-  virtual WebString title() { return title_; }
+  virtual WebString title();
 
   /// Get the session associated with this WebView.
   virtual WebSession* session() { return session_; }
@@ -330,7 +330,9 @@ class WebViewImpl: public WebView {
   ///
   /// @see FocusedElementType
   ///
-  virtual FocusedElementType focused_element_type();
+  virtual FocusedElementType focused_element_type() {
+      return focused_element_type_;
+  }
 
   ///
   /// Zooms into the page by 20%. (This is full-page zoom, increases size of
@@ -741,6 +743,10 @@ class WebViewImpl: public WebView {
 
   virtual ~WebViewImpl();
 
+  void set_focused_element_type(FocusedElementType type) {
+      focused_element_type_ = type;
+  }
+
  private:
     int width_;
     int height_;
@@ -764,6 +770,7 @@ class WebViewImpl: public WebView {
     bool transparent_;
     bool loading_;
     bool crashed_;
+    FocusedElementType focused_element_type_;
     // CFE3-related members
     ClientHandler* client_handler_;
     CefRefPtr<CefBrowser> browser_;

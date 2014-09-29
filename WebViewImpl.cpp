@@ -7,6 +7,8 @@
 
 #include "InternalHelper.h"
 
+#define _TWS(str) InternalHelper::ToWebString(str)
+
 using namespace Awesomium;
 
 WebViewImpl::WebViewImpl(int width,
@@ -90,4 +92,122 @@ void WebViewImpl::LoadURL(const WebURL& url)
     WebSessionImpl* session_impl = dynamic_cast<WebSessionImpl*>(session_);
     CefBrowserHost::CreateBrowser(window_info, client_handler_,
         session_impl->settings_, InternalHelper::ToCefString(url), 0);
+}
+
+void WebViewImpl::GoBack()
+{
+    client_handler_->GoBack();
+}
+
+void WebViewImpl::GoForward()
+{
+    client_handler_->GoForward();
+}
+
+void WebViewImpl::GoToHistoryOffset(int offset)
+{
+    client_handler_->GoToHistoryOffset(int offset);
+}
+
+void WebViewImpl::Stop()
+{
+    client_handler_->StopLoad();
+}
+
+void WebViewImpl::Reload(bool ignore_cache)
+{
+    client_handler_->Reload(ignore_cache);
+}
+
+bool WebViewImpl::CanGoBack()
+{
+    return client_handler_->CanGoBack();
+}
+
+bool WebViewImpl::CanGoForward()
+{
+    return client_handler_->CanGoForward();
+}
+
+Surface* WebViewImpl::surface()
+{
+    //TODO
+    if (type != kWebViewType_Offscreen)
+        return NULL;
+    SurfaceFactory* surface_factory = WebCore::instance()->surface_factory();
+    if (surface_)
+        surface_factory->DestroySurface(surface_);
+    surface_ = surface_factory->CreateSurface(this, width_, height_);
+    return surface_;
+}
+
+WebString WebViewImpl::title()
+{
+    return _TWS(client_handler_->title());
+}
+
+bool WebViewImpl::IsLoading()
+{
+    return client_handler_->IsLoading();
+}
+
+bool WebViewImpl::IsCrashed()
+{
+    return client_handler_->IsCrashed();
+}
+
+void WebViewImpl::Resize(int width, int height)
+{
+    client_handler_->Resize();
+}
+
+void WebViewImpl::PauseRendering()
+{
+    client_handler_->PauseRendering();
+}
+
+void WebViewImpl::ResumeRendering()
+{
+    client_handler_->ResumeRendering();
+}
+
+void WebViewImpl::Focus()
+{
+    client_handler_->Focus();
+}
+
+void WebViewImpl::Unfocus()
+{
+    client_handler_->Unfocus();
+}
+
+void WebViewImpl::ZoomIn()
+{
+    int zoom_percent = GetZoom() + 20;
+    if (zoom_percent > 200)
+        zoom_percent = 200;
+    SetZoom(zoom_percent);
+}
+
+void WebViewImpl::ZoomOut()
+{
+    int zoom_percent = GetZoom() - 20;
+    if (zoom_percent < 20)
+        zoom_percent = 20;
+    SetZoom(zoom_percent);
+}
+
+void WebViewImpl::SetZoom(int zoom_percent)
+{
+    client_handler_->SetZoomLevel(zoom_percent * 1.0 / 100);
+}
+
+void WebViewImpl::ResetZoom()
+{
+    SetZoom(100);
+}
+
+int WebViewImpl::GetZoom()
+{
+    return (int)(client_handler_->GetZoomLevel() * 100);
 }
