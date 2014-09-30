@@ -128,3 +128,32 @@ int InternalHelper::ToMediaState(CefContextMenuParams::MediaStateFlags state_fla
     //       and CM_MEDIAFLAG_CAN_ROTATE
     return media_state;
 }
+
+CefBrowserHost::MouseButtonType InternalHelper::FromMouseButton(
+        MouseButton button)
+{
+    switch (button) {
+        case kMouseButton_Left: return MBT_LEFT;
+        case kMouseButton_Middle: return MBT_MIDDLE;
+        case kMouseButton_Right: return MBT_RIGHT;
+        default: return MBT_LEFT;
+    }
+}
+
+int InternalHelper::FromKeyboardModifiers(int modifiers)
+{
+    int cef_modifiers = 0;
+    if (modifiers & WebKeyboardEvent::kModShiftKey)
+        cef_modifiers |= EVENTFLAG_SHIFT_DOWN;
+    if (modifiers & WebKeyboardEvent::kModControlKey)
+        cef_modifiers |= EVENTFLAG_CONTROL_DOWN;
+    if (modifiers & WebKeyboardEvent::kModAltKey)
+        cef_modifiers |= EVENTFLAG_ALT_DOWN;
+    if (modifiers & WebKeyboardEvent::kModMetaKey)
+        cef_modifiers |= EVENTFLAG_COMMAND_DOWN;
+    if (modifiers & WebKeyboardEvent::kModIsKeypad)
+        cef_modifiers |= EVENTFLAG_IS_KEY_PAD;
+    if (modifiers & WebKeyboardEvent::kModIsAutorepeat)
+        ;  // TODO
+    return cef_modifiers;
+}

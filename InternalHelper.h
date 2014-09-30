@@ -11,11 +11,13 @@
 #include <Awesomium/WebString.h>
 #include <Awesomium/WebURL.h>
 #include <Awesomium/WebViewListener.h>
+#include <Awesomium/WebView.h>
 
 #include <include/cef_base.h>
 #include <include/cef_dom.h>
 #include <include/cef_request_handler.h>
 #include <include/cef_context_menu_handler.h>
+#include <include/cef_browser.h>
 
 namespace Awesomium {
 
@@ -30,6 +32,9 @@ public:
     static TerminationStatus ToTerminationStatus(CefRequestHandler::TerminationStatus status);
     static MediaType ToMediaType(CefContextMenuParams::MediaType media_type);
     static int ToMediaState(CefContextMenuParams::MediaStateFlags state_flags);
+
+    static CefBrowserHost::MouseButtonType FromMouseButton(MouseButton button);
+    static int FromKeyboardModifiers(int modifiers);
 };
 
 }

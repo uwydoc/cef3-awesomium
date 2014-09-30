@@ -211,3 +211,161 @@ int WebViewImpl::GetZoom()
 {
     return (int)(client_handler_->GetZoomLevel() * 100);
 }
+
+void WebViewImpl::InjectMouseMove(int x, int y)
+{
+    CefMouseEvent mouse_event;
+    mouse_event.x = x;
+    mouse_event.y = y;
+    mouse_event.modifiers = 0;
+
+    CefRefPtr<CefBrowser> browser = client_handler_->GetBrowser();
+    browser->GetHost()->SendMouseMoveEvent(mouse_event, false);
+}
+
+void WebViewImpl::InjectMouseClick(MouseButton button,
+                                  bool mouse_up,
+                                  bool double_click)
+{
+    CefMouseEvent mouse_event;
+    client_handler_->GetMousePos(mouse_event.x, mouse_event.y);
+    mouse_event.modifiers = 0;
+    CefBrowserHost::MouseButtonType mouse_button =
+        InternalHelper::FromMouseButton(button);
+    int click_count = double_click ? 2 : 1;
+
+    CefRefPtr<CefBrowser> browser = client_handler_->GetBrowser();
+    browser->GetHost()->SendMouseClickEvent(mouse_event, mouse_button,
+            double_click ? true : mouse_up, click_count);
+}
+
+void WebViewImpl::InjectMouseDown(MouseButton button)
+{
+    InjectMouseClick(button, false, false);
+}
+
+void WebViewImpl::InjectMouseUp(MouseButton button)
+{
+    InjectMouseClick(button, true, false);
+}
+
+void WebViewImpl::InjectMouseWheel(int scroll_vert, int scroll_horz)
+{
+    CefMouseEvent mouse_event;
+    client_handler_->GetMousePos(mouse_event.x, mouse_event.y);
+    mouse_event.modifiers = 0;
+
+    CefRefPtr<CefBrowser> browser = client_handler_->GetBrowser();
+    browser->GetHost()->SendMouseWheelEvent(mouse_event, scroll_horz,
+            scroll_vert);
+}
+
+void WebViewImpl::InjectKeyboardEvent(const WebKeyboardEvent& key_event)
+{
+    CefKeyEvent cef_key_event;
+    switch (key_event.type) {
+        case WebKeyboardEvent::kTypeKeyDown:
+            cef_key_event.type = KEYEVENT_RAWKEYDOWN;
+            break;
+        case WebKeyboardEvent::kTypeKeyUp:
+            cef_key_event.type = KEYEVENT_KEYUP;
+            break;
+        case WebKeyboardEvent::kTypeChar:
+            cef_key_event.type = KEYEVENT_CHAR;
+            break;
+    }
+    cef_key_event.modifiers = InternalHelper::FromKeyboardModifiers(
+            key_event.modifiers);
+    cef_key_event.is_system_key = key_event.is_system_key;
+    cef_key_event.native_key_code = key_event.native_key_code;
+    cef_key_event.character = key_event.text[0];
+    cef_key_event.unmodified_character = key_event.unmodified_text[0];
+    //TODO windows_key_code, focus_on_editable_field
+
+    CefRefPtr<CefBrowser> browser = client_handler_->GetBrowser();
+    browser->GetHost()->SendKeyEvent(cef_key_event);
+}
+
+void WebViewImpl::InjectTouchEvent(const WebTouchEvent& touch_event)
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::ActivateIME(bool active)
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::SetIMEComposition(const WebString &input_string,
+                                    int cursor_pos,
+                                    int target_start,
+                                    int target_end)
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::ConfirmIMEComposition(const WebString &input_string)
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::CancelIMEComposition()
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::Undo()
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::Redo()
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::Cut()
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::Copy()
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::CopyImageAt(int x, int y)
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::Paste()
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::PasteAndMatchStyle()
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::SelectAll()
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+void WebViewImpl::PrintToFile(const WebString& output_directory,
+                              const PrintConfig& config)
+{
+    //TODO - not implemented in CEF3 yet
+}
+
+Error WebViewImpl::last_error()
+{
+    //TODO
+    return kError_None;
+}
+
+JSValue WebViewImpl::CreateGlobalJavascriptObject(const WebString& name)
+{
+}
