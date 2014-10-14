@@ -30,6 +30,11 @@ public:
     {
         return vector_.size();
     }
+    unsigned int capacity() const
+    {
+        return vector_.capacity();
+    }
+
     T& at(unsigned int idx)
     {
         const WebVector<T>* const_this = this;
@@ -51,6 +56,26 @@ public:
     void push_back(const T& item)
     {
         vector_.push_back(item);
+    }
+    void pop_back()
+    {
+        vector_.pop_back();
+    }
+    void insert(const T& item, unsigned int idx)
+    {
+        auto pos = vector_.begin();
+        std::advance(pos, idx);
+        vector_.insert(pos, item)
+    }
+    void erase(unsigned int idx)
+    {
+        auto pos = vector_.begin();
+        std::advance(pos, idx);
+        vector_.erase(pos);
+    }
+    void clear()
+    {
+        vector_.clear();
     }
 
 private:
